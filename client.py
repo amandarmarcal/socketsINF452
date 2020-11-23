@@ -45,7 +45,7 @@ def entradaDados(conectado):
             tcp.send(getMsg.encode())
             tcp.recv(1024).decode()
             ack = tcp.recv(1024).decode()
-            
+
             nomeArquivo = 'client' + entradaList[1]
             if ack != 'error':
                 arquivo = open(nomeArquivo, 'w')
@@ -54,6 +54,7 @@ def entradaDados(conectado):
                     if not dados:
                         break
                     arquivo.write(dados)
+                arquivo.close()
                 tcp.close()
             else:
                 print('Arquivo não disponível!')
