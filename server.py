@@ -1,3 +1,15 @@
+'''
+                    Universidade Federal de Viçosa
+                     Departamento de Informática
+                     INF452 Redes de Computadores
+                         Trabalho prático 2 
+
+                Amanda Marçal Rossinol      92549
+                Leandro Xavier              92542
+
+            19/11/2020
+''' 
+
 import socket
 import threading
 
@@ -53,8 +65,6 @@ def conexaoUDP():
             info3 = 'INFO:' + 'Clientes conectados:' + listM
             udp.sendto(info3.encode(), cliente)
             
-        elif msgList[0] == 'GET':
-            print('GET')    
 
         elif msgList[0] == 'BYE':
             nome2 = usuariosPorEndereco.pop(cliente)
@@ -81,7 +91,7 @@ def conexaoTCP():
                 #nomeCliente = nomeCliente[:-1]
                 nomeArquivo = msgListTCP[1]
 
-                nomeCache = 'cache' + nomeArquivo
+                nomeCache = 'cacheFile'
                 arquivo = open(nomeCache, 'w')
                 while True:
                     dados = con.recv(1024).decode()
@@ -104,11 +114,12 @@ def conexaoTCP():
                 
                 if msgListTCP[1] == nomeArquivo:
                     con.send('ok'.encode())
-                    nomeCache = 'cache' + nomeArquivo
-                    print(nomeCache)
+                    nomeCache = 'cacheFile'
+                    
                     arquivo = open(nomeCache, 'r')
                     for line in arquivo.readlines():
                         con.send(line.encode())
+                    arquivo.close()
                     con.close()
                 else:    
                     con.send('error'.encode())

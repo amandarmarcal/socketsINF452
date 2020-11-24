@@ -1,3 +1,14 @@
+'''
+                    Universidade Federal de Viçosa
+                     Departamento de Informática
+                     INF452 Redes de Computadores
+                         Trabalho prático 2 
+
+                Amanda Marçal Rossinol      92549
+                Leandro Xavier              92542
+
+            19/11/2020
+'''          
 
 import socket
 import threading
@@ -26,43 +37,56 @@ def entradaDados(conectado):
             udp.sendto('LIST'.encode(), destiny)
             
         elif entradaList[0] == '/file':     
-            dados = open(entradaList[1], 'r')
-            tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            tcp.connect(destiny)
-            fileMsg = 'FILE:' + entradaList[1] 
-            tcp.send(fileMsg.encode())
-            tcp.recv(1024)
-            tcp.send(nome.encode())
-            tcp.recv(1024)
-            for line in dados.readlines():
-                tcp.send(line.encode())
-            tcp.close()
+            try:
+                dados = open(entradaList[1], 'r')
+                tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                tcp.connect(destiny)
+                fileMsg = 'FILE:' + entradaList[1] 
+                tcp.send(fileMsg.encode())
+                tcp.recv(1024)
+                tcp.send(nome.encode())
+                tcp.recv(1024)
+                for line in dados.readlines():
+                    tcp.send(line.encode())
+                tcp.close()
+                dados.close()
+
+            except Exception as ex:
+                print(ex)
+
 
         elif entradaList[0] == '/get':
-            tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            tcp.connect(destiny)
-            getMsg = 'GET:' + entradaList[1]
-            tcp.send(getMsg.encode())
-            tcp.recv(1024).decode()
-            ack = tcp.recv(1024).decode()
+            try:
+                tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                tcp.connect(destiny)
+                getMsg = 'GET:' + entradaList[1]
+                tcp.send(getMsg.encode())
+                tcp.recv(1024).decode()
+                ack = tcp.recv(1024).decode()
 
-            nomeArquivo = 'client' + entradaList[1]
-            if ack != 'error':
-                arquivo = open(nomeArquivo, 'w')
-                while True:
-                    dados = tcp.recv(1024).decode()
-                    if not dados:
-                        break
-                    arquivo.write(dados)
-                arquivo.close()
-                tcp.close()
-            else:
-                print('Arquivo não disponível!')
-                tcp.close()
+                nomeArquivo = 'client' + entradaList[1]
+                if ack != 'error':
+                    arquivo = open(nomeArquivo, 'w')
+                    while True:
+                        dados = tcp.recv(1024).decode()
+                        if not dados:
+                            break
+                        arquivo.write(dados)
+                    arquivo.close()
+                    tcp.close()
+                    print("Escreveu arquivo")
+                else:
+                    print('Arquivo não disponível!')
+                    tcp.close()
+            except Exception as ex:
+                print(ex)
 
         else:
             info1 = 'MSG:' + entrada 
             udp.sendto(info1.encode(), destiny)
+
+        print("terminou função")
+
 
 
 def escutaServer(conectado):
